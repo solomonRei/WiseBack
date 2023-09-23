@@ -3,9 +3,11 @@ package com.teamback.wise.services;
 import com.teamback.wise.domain.repositories.UserRepository;
 import com.teamback.wise.models.responses.AuthResponse;
 import com.teamback.wise.models.responses.GoogleUserResponse;
+import com.teamback.wise.security.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,16 +18,18 @@ public class CustomAuthenticationService {
     private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationService.class);
     private final RefreshTokenService refreshTokenService;
     private final JWTTokenService jwtTokenService;
-
     private final UserRepository userRepository;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     public CustomAuthenticationService(RefreshTokenService refreshTokenService,
                                        JWTTokenService jwtTokenService,
-                                       UserRepository userRepository) {
+                                       UserRepository userRepository,
+                                       UserDetailsServiceImpl userDetailsService) {
         this.refreshTokenService = refreshTokenService;
         this.jwtTokenService = jwtTokenService;
         this.userRepository = userRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     public AuthResponse authenticate(GoogleUserResponse googleUserResponse) {
@@ -39,6 +43,16 @@ public class CustomAuthenticationService {
 
         String token = jwtTokenService.generateAccessToken(googleUserResponse.getUsername());
         String refreshToken = refreshTokenService.createRefreshToken(googleUserResponse.getUsername());
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername("seo");
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails,
+                        null,
+                        userDetails.getAuthorities());
+//                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        logger.info("Successfully authenticated user with username: " + googleUserResponse.getUsername());
 
         return AuthResponse.builder()
                 .email(googleUserResponse.getEmail())

@@ -35,12 +35,6 @@ public class UserEntity {
     @Column(nullable = false)
     private String email;
 
-    @Column(name = "access_token", nullable = false)
-    private String accessToken;
-
-    @Column(name = "refresh_token", nullable = false)
-    private String refreshToken;
-
     @Column(name = "created_at", nullable = false)
     private LocalTime createdAt;
 

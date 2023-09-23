@@ -8,7 +8,6 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.teamback.wise.security.JWTConfigProperties;
 import com.teamback.wise.security.filters.ExceptionHandlerFilter;
-import com.teamback.wise.security.filters.GoogleAuthenticationFilter;
 import com.teamback.wise.security.filters.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -36,19 +35,16 @@ public class SecurityConfig {
 
     public final JWTConfigProperties jwtConfigProperties;
     private final JWTAuthenticationFilter jwtAuthenticationFilter;
-    private final GoogleAuthenticationFilter googleAuthenticationFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
 
 
     @Autowired
     public SecurityConfig(JWTConfigProperties jwtConfigProperties,
                           JWTAuthenticationFilter jwtAuthenticationFilter,
-                          GoogleAuthenticationFilter googleAuthenticationFilter,
                           ExceptionHandlerFilter exceptionHandlerFilter
     ) {
         this.jwtConfigProperties = jwtConfigProperties;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.googleAuthenticationFilter = googleAuthenticationFilter;
         this.exceptionHandlerFilter = exceptionHandlerFilter;
     }
 
@@ -68,8 +64,7 @@ public class SecurityConfig {
                                 .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
                 .httpBasic(withDefaults())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(exceptionHandlerFilter, JWTAuthenticationFilter.class)
-                .addFilterAfter(googleAuthenticationFilter, JWTAuthenticationFilter.class);
+                .addFilterBefore(exceptionHandlerFilter, JWTAuthenticationFilter.class);
 
 
         return http.build();

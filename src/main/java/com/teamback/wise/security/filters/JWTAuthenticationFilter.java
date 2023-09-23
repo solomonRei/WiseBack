@@ -21,8 +21,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/actuator/**"),
             new AntPathRequestMatcher("/auth/**"),
-            new AntPathRequestMatcher("/error"),
-            new AntPathRequestMatcher("/auth/google")
+            new AntPathRequestMatcher("/error")
     );
 
     @Override
@@ -33,9 +32,16 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 
         if (this.publicEndpoints.stream().anyMatch(matcher -> matcher.matches(request))) {
+            if (authHeader != null && authHeader.startsWith("Google ")) {
+                final var googleId = authHeader.replaceAll("^Google ", "");
+                request.setAttribute("googleIdToken", googleId);
+                logger.info("Obtained users Google ID Token: " + googleId);
+            }
             filterChain.doFilter(request, response);
             return;
-        } else if (authHeader == null || (authHeader.contains("Bearer") && authHeader.length() < 7) || authHeader.isBlank()) {
+        } else if (authHeader == null || (authHeader.contains("Bearer") && authHeader.length() < 7)
+                || authHeader.isBlank()
+                || !authHeader.contains("Bearer")) {
             throw new JWTInvalidException("Invalid JWT Token in Authorization header! It is blank.");
         }
 
