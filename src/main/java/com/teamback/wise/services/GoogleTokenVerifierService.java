@@ -7,54 +7,40 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.teamback.wise.models.responses.GoogleUserResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
+@Slf4j
 @Service
 public class GoogleTokenVerifierService {
 
     @Value("${google.client-id}")
     private String ClientId;
 
-    private static final Logger logger = LoggerFactory.getLogger(GoogleTokenVerifierService.class);
+    @Value("${google.client-secret}")
+    private String ClientToken;
 
-    public GoogleUserResponse verifyGoogleId(String googleId) throws GeneralSecurityException, IOException {
-        logger.info("Verifying Google ID: " + googleId);
+    public GoogleUserResponse verifyGoogleId(String googleId) {
+        log.info("Verifying Google ID: " + googleId);
+        try {
 
         return GoogleUserResponse.builder()
                 .username("seo")
                 .email("test@mail.ru")
                 .build();
 
-//        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-//                .setAudience(Collections.singletonList(ClientId))
-//                .build();
-//
-//        GoogleIdToken idToken = verifier.verify(googleId);
-//        if (idToken != null) {
-//            Payload payload = idToken.getPayload();
-//            String userId = payload.getSubject();
-//            String email = payload.getEmail();
-//
-//            logger.info("Writing Google Info: " + userId + " " + email);
-//
-//            return GoogleUserResponse.builder()
-//                    .username(userId)
-//                    .email(email)
-//                    .build();
-//
-//        } else {
-//            logger.error("Invalid ID token.");
-//
-//            //TODO: use GlobalExceptionHandler
-//            throw new RuntimeException("Invalid ID token.");
-//        }
-
+        } catch (Exception e) {
+            log.error("Error authenticating user with Google ID.");
+            return null;
+        }
     }
 }

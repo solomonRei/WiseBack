@@ -1,9 +1,9 @@
 package com.teamback.wise.services;
 
+import com.teamback.wise.models.responses.dto.TokenDto;
 import com.teamback.wise.security.JWTConfigProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -12,23 +12,19 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.Date;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class JWTTokenService {
-    private static final Logger logger = LoggerFactory.getLogger(JWTTokenService.class);
 
     private final JwtEncoder encoder;
+
     private final JWTConfigProperties jwtConfigProperties;
 
-    @Autowired
-    public JWTTokenService(JwtEncoder encoder,
-                           JWTConfigProperties jwtConfigProperties) {
-        this.encoder = encoder;
-        this.jwtConfigProperties = jwtConfigProperties;
-    }
+    public TokenDto generateAccessToken(String userId) {
+        log.info("Generating access token for user: " + userId);
 
-    public String generateAccessToken(String userId) {
-        logger.info("Generating access token for user: " + userId);
-        Date expirationTime = Date.from(Instant.now().plusMillis(jwtConfigProperties.getExpirationTimeAccessTokenMs()));
+        Date expirationTime = Date.from(Instant.now().plusSeconds(jwtConfigProperties.getExpirationTimeAccessTokenMn() * 60L));
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer(jwtConfigProperties.getIssuer())
                 .issuedAt(Instant.now())
@@ -36,12 +32,15 @@ public class JWTTokenService {
                 .subject(userId)
                 .build();
 
-        return this.encoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue();
+        return TokenDto.builder()
+                .token(this.encoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue())
+                .expirationTime(expirationTime.toInstant())
+                .build();
     }
 
     public String generateRefreshToken(String userId) {
-        logger.info("Generating refresh token for user: " + userId);
-        Date expirationTime = Date.from(Instant.now().plusMillis(jwtConfigProperties.getExpirationTimeRefreshTokenMs()));
+        log.info("Generating refresh token for user: " + userId);
+        Date expirationTime = Date.from(Instant.now().plusSeconds(jwtConfigProperties.getExpirationTimeRefreshTokenMn() * 60L));
         JwtClaimsSet claimsSet = JwtClaimsSet.builder()
                 .issuer(jwtConfigProperties.getIssuer())
                 .issuedAt(Instant.now())

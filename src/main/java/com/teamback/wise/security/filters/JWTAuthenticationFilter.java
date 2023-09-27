@@ -16,11 +16,12 @@ import java.util.List;
 
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
+
     private final List<RequestMatcher> publicEndpoints = Arrays.asList(
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/actuator/**"),
-            new AntPathRequestMatcher("/auth/**"),
+            new AntPathRequestMatcher("/authentication/**"),
             new AntPathRequestMatcher("/error")
     );
 
@@ -32,11 +33,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
 
         if (this.publicEndpoints.stream().anyMatch(matcher -> matcher.matches(request))) {
-            if (authHeader != null && authHeader.startsWith("Google ")) {
-                final var googleId = authHeader.replaceAll("^Google ", "");
-                request.setAttribute("googleIdToken", googleId);
-                logger.info("Obtained users Google ID Token: " + googleId);
-            }
+            System.out.println("Public URL");
             filterChain.doFilter(request, response);
             return;
         } else if (authHeader == null || (authHeader.contains("Bearer") && authHeader.length() < 7)

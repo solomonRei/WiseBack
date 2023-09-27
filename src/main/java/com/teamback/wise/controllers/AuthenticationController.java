@@ -1,48 +1,37 @@
 package com.teamback.wise.controllers;
 
+import com.teamback.wise.models.requests.RegistrationRequest;
 import com.teamback.wise.models.responses.AuthResponse;
 import com.teamback.wise.models.responses.GoogleUserResponse;
-import com.teamback.wise.services.CustomAuthenticationService;
 import com.teamback.wise.services.GoogleTokenVerifierService;
-import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
+import com.teamback.wise.services.UserAuthenticationService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("/authentication")
 public class AuthenticationController {
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
-    private final CustomAuthenticationService customAuthenticationService;
+
+    private final UserAuthenticationService userAuthenticationService;
 
     private final GoogleTokenVerifierService googleTokenVerifierService;
 
-    public AuthenticationController(CustomAuthenticationService customAuthenticationService,
-                                    GoogleTokenVerifierService googleTokenVerifierService) {
-        this.customAuthenticationService = customAuthenticationService;
-        this.googleTokenVerifierService = googleTokenVerifierService;
-    }
+    @PostMapping("/registration")
+    public ResponseEntity<AuthResponse> registration(@Valid @RequestBody RegistrationRequest RegistrationRequest) {
+        log.info("Authenticating user with Google ID.");
+        GoogleUserResponse googleUserResponse = googleTokenVerifierService.verifyGoogleId(RegistrationRequest.getGoogleIdToken());
+        AuthResponse response = userAuthenticationService.registration(googleUserResponse);
 
-    @PostMapping("/auth/google")
-    public ResponseEntity<AuthResponse> authWithGoogleId(HttpServletRequest request) {
-        try {
-            logger.info("Authenticating user with Google ID.");
-            GoogleUserResponse googleUserResponse = googleTokenVerifierService.verifyGoogleId((String) request.getAttribute("googleIdToken"));
-            AuthResponse response = customAuthenticationService.authenticate(googleUserResponse);
-
-            logger.info("User is successfully authenticated.");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Error authenticating user with Google ID.");
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    @PostMapping("/test")
-    public void test() {
-        System.out.println("test");
+        log.info("User is successfully registered.");
+        return ResponseEntity.status(201).body(response);
     }
 
 }

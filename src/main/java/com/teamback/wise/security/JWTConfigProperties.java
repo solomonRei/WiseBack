@@ -12,13 +12,19 @@ import java.security.interfaces.RSAPublicKey;
 @Validated
 @ConfigurationProperties(prefix = "jwt")
 public class JWTConfigProperties {
+
     @NotNull
     private RSAPublicKey publicKey;
+
     @NotNull
     private RSAPrivateKey privateKey;
+
     private String audience;
+
     private String issuer;
-    private int expirationTimeAccessTokenMs;
-    private int expirationTimeRefreshTokenMs;
+
+    private int expirationTimeAccessTokenMn;
+
+    private int expirationTimeRefreshTokenMn;
 
 }
