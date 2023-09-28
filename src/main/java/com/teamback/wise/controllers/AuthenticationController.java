@@ -26,7 +26,7 @@ public class AuthenticationController {
 
     @PostMapping("/registration")
     public ResponseEntity<AuthResponse> registration(@Valid @RequestBody RegistrationRequest RegistrationRequest) {
-        log.info("Authenticating user with Google ID.");
+        log.info("Registering user with Google ID.");
         GoogleUserResponse googleUserResponse = googleTokenVerifierService.verifyGoogleId(RegistrationRequest.getGoogleIdToken());
         AuthResponse response = userAuthenticationService.registration(googleUserResponse);
 

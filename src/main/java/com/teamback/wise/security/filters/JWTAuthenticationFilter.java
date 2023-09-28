@@ -1,6 +1,6 @@
 package com.teamback.wise.security.filters;
 
-import com.teamback.wise.exceptions.JWTInvalidException;
+import com.teamback.wise.exceptions.auth.JWTInvalidException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

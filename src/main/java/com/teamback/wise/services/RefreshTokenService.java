@@ -4,6 +4,7 @@ import com.teamback.wise.domain.entities.RefreshTokenEntity;
 import com.teamback.wise.domain.entities.UserEntity;
 import com.teamback.wise.domain.mappers.RefreshTokenMapper;
 import com.teamback.wise.domain.repositories.RefreshTokenRepository;
+import com.teamback.wise.exceptions.auth.ExpiredRefreshTokenException;
 import com.teamback.wise.models.responses.dto.RefreshTokenDto;
 import com.teamback.wise.security.JWTConfigProperties;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class RefreshTokenService {
     public RefreshTokenEntity verifyExpiration(RefreshTokenEntity token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new RuntimeException("Refresh token was expired. Please make a new signin request");
+            throw new ExpiredRefreshTokenException("Refresh token was expired. Please make a new signin request");
         }
 
         return token;

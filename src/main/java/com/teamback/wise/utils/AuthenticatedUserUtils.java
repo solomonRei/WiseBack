@@ -1,5 +1,6 @@
 package com.teamback.wise.utils;
 
+import com.teamback.wise.exceptions.user.UserNotAuthenticatedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +13,7 @@ public class AuthenticatedUserUtils {
             return authentication.getName();
         }
 
-        return null;
+        throw new UserNotAuthenticatedException("User is not authenticated.");
     }
 
     public UserDetails getCurrentUserDetails() {
@@ -21,6 +22,6 @@ public class AuthenticatedUserUtils {
             return (UserDetails) authentication.getPrincipal();
         }
 
-        return null;
+        throw new UserNotAuthenticatedException("User is not authenticated.");
     }
 }
