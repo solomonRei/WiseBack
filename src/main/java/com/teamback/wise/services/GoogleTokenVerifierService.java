@@ -38,7 +38,7 @@ public class GoogleTokenVerifierService {
                 String userId = payload.getSubject();
                 String email = payload.getEmail();
 
-                log.info("Writing Google Info: " + userId + " " + email);
+                log.info("User is authenticated");
 
                 return GoogleUserResponse.builder()
                         .username(userId)
