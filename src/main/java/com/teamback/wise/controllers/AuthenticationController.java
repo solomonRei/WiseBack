@@ -1,9 +1,16 @@
 package com.teamback.wise.controllers;
 
+import com.teamback.wise.domain.entities.RefreshTokenEntity;
+import com.teamback.wise.domain.entities.UserEntity;
+import com.teamback.wise.domain.mappers.RefreshTokenMapper;
+import com.teamback.wise.models.requests.RefreshTokenRequest;
 import com.teamback.wise.models.requests.RegistrationRequest;
 import com.teamback.wise.models.responses.AuthResponse;
 import com.teamback.wise.models.responses.GoogleUserResponse;
+import com.teamback.wise.models.responses.RefreshTokenResponse;
+import com.teamback.wise.models.responses.dto.RefreshTokenDto;
 import com.teamback.wise.services.GoogleTokenVerifierService;
+import com.teamback.wise.services.RefreshTokenService;
 import com.teamback.wise.services.UserAuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +31,8 @@ public class AuthenticationController {
 
     private final GoogleTokenVerifierService googleTokenVerifierService;
 
+    private final RefreshTokenService refreshTokenService;
+
     @PostMapping("/registration")
     public ResponseEntity<AuthResponse> registration(@Valid @RequestBody RegistrationRequest RegistrationRequest) {
         log.info("Registering user with Google ID.");
@@ -32,6 +41,14 @@ public class AuthenticationController {
 
         log.info("User is successfully registered.");
         return ResponseEntity.status(201).body(response);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponse> refresh(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+        log.info("Refresh request received.");
+
+        RefreshTokenResponse response = refreshTokenService.refresh(refreshTokenRequest.getRefreshToken());
+        return ResponseEntity.status(200).body(response);
     }
 
 }

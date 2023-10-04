@@ -3,6 +3,7 @@ package com.teamback.wise.services;
 import com.teamback.wise.domain.mappers.UserMapper;
 import com.teamback.wise.models.responses.AuthResponse;
 import com.teamback.wise.models.responses.GoogleUserResponse;
+import com.teamback.wise.models.responses.RefreshTokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,4 +35,6 @@ public class UserAuthenticationService {
                 .expirationTime(tokenDto.getExpirationTime())
                 .build();
     }
+
+
 }
