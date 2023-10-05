@@ -1,6 +1,10 @@
 package com.teamback.wise.models.responses;
 
-import lombok.*;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 
