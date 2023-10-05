@@ -1,14 +1,10 @@
 package com.teamback.wise.controllers;
 
-import com.teamback.wise.domain.entities.RefreshTokenEntity;
-import com.teamback.wise.domain.entities.UserEntity;
-import com.teamback.wise.domain.mappers.RefreshTokenMapper;
 import com.teamback.wise.models.requests.RefreshTokenRequest;
 import com.teamback.wise.models.requests.RegistrationRequest;
 import com.teamback.wise.models.responses.AuthResponse;
 import com.teamback.wise.models.responses.GoogleUserResponse;
 import com.teamback.wise.models.responses.RefreshTokenResponse;
-import com.teamback.wise.models.responses.dto.RefreshTokenDto;
 import com.teamback.wise.services.GoogleTokenVerifierService;
 import com.teamback.wise.services.RefreshTokenService;
 import com.teamback.wise.services.UserAuthenticationService;
@@ -47,8 +43,8 @@ public class AuthenticationController {
     public ResponseEntity<RefreshTokenResponse> refresh(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
         log.info("Refresh request received.");
 
-        RefreshTokenResponse response = refreshTokenService.refresh(refreshTokenRequest.getRefreshToken());
-        return ResponseEntity.status(200).body(response);
+        var response = refreshTokenService.refresh(refreshTokenRequest.getRefreshToken());
+        return ResponseEntity.ok(response);
     }
 
 }

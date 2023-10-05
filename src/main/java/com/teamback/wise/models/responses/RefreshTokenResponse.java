@@ -1,16 +1,13 @@
 package com.teamback.wise.models.responses;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class RefreshTokenResponse {
     private final String accessToken;
 

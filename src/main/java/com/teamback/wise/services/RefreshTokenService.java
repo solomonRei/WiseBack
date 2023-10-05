@@ -8,14 +8,13 @@ import com.teamback.wise.exceptions.auth.ExpiredRefreshTokenException;
 import com.teamback.wise.exceptions.auth.InvalidRefreshTokenException;
 import com.teamback.wise.models.responses.RefreshTokenResponse;
 import com.teamback.wise.models.responses.dto.RefreshTokenDto;
-import com.teamback.wise.models.responses.dto.TokenDto;
 import com.teamback.wise.security.JWTConfigProperties;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -28,7 +27,6 @@ public class RefreshTokenService {
     private final JWTConfigProperties jwtConfigProperties;
 
     private final JWTTokenService jwtTokenService;
-
 
     public RefreshTokenDto createRefreshToken(UserEntity user) {
         var refreshToken = RefreshTokenEntity.builder()
@@ -54,7 +52,7 @@ public class RefreshTokenService {
 
     public RefreshTokenEntity getRefreshTokenFromString(String tokenString) {
         return refreshTokenRepository.findByToken(tokenString)
-                .orElseThrow(() -> new InvalidRefreshTokenException(tokenString));
+                .orElseThrow(InvalidRefreshTokenException::new);
     }
 
     @Transactional
@@ -62,15 +60,14 @@ public class RefreshTokenService {
         var verifiedToken = verifyExpiration(getRefreshTokenFromString(tokenString));
         refreshTokenRepository.deleteByToken(verifiedToken.getToken());
 
-        RefreshTokenDto refreshTokenDto = createRefreshToken(verifiedToken.getUser());
-        TokenDto accessTokenDto = jwtTokenService.generateAccessToken(verifiedToken.getUser().getId().toString());
+        var refreshTokenDto = createRefreshToken(verifiedToken.getUser());
+        var accessTokenDto = jwtTokenService.generateAccessToken(verifiedToken.getUser().getId().toString());
 
-        RefreshTokenResponse response = RefreshTokenResponse.builder()
-                    .refreshToken(refreshTokenDto.getRefreshToken())
-                    .expirationTime(accessTokenDto.getExpirationTime())
-                    .accessToken(accessTokenDto.getToken())
-                    .build();
-        return response;
+        return RefreshTokenResponse.builder()
+                .refreshToken(refreshTokenDto.getRefreshToken())
+                .expirationTime(accessTokenDto.getExpirationTime())
+                .accessToken(accessTokenDto.getToken())
+                .build();
     }
 
 }
