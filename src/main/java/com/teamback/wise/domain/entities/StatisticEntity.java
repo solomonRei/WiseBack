@@ -1,5 +1,6 @@
 package com.teamback.wise.domain.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -26,18 +28,24 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "statistics")
+public class StatisticEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    @Column(name = "view_count", nullable = false)
+    @ColumnDefault("0")
+    private int viewCount;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    @Column(name = "video_count", nullable = false)
+    @ColumnDefault("0")
+    private int videoCount;
+
+    @Column(name = "subscriber_count", nullable = false)
+    @ColumnDefault("0")
+    private int subscriberCount;
 
     @Column(name = "created_at", nullable = false)
     private LocalTime createdAt;
@@ -45,11 +53,11 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalTime updatedAt;
 
-    @OneToMany(mappedBy = "user")
-    private List<RefreshTokenEntity> refreshTokens;
+    @OneToMany(mappedBy = "statistic", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<StatisticsCountryEntity> statisticsCountry;
 
-    @OneToOne(mappedBy = "user")
-    private StatisticEntity statistic;
+    @OneToOne
+    private UserEntity user;
 
     @PrePersist
     protected void onCreate() {
@@ -61,5 +69,4 @@ public class UserEntity {
     protected void onUpdate() {
         this.updatedAt = LocalTime.now();
     }
-
 }

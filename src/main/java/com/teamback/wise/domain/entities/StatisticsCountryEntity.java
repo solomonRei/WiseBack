@@ -1,12 +1,13 @@
 package com.teamback.wise.domain.entities;
 
+import com.teamback.wise.enums.CountryCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -15,9 +16,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalTime;
-import java.util.List;
 import java.util.UUID;
 
 @Builder
@@ -26,18 +27,33 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "statistics_country")
+public class StatisticsCountryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    @Column(name = "country_code", nullable = false)
+    private CountryCode countryCode;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    @Column(name = "views", nullable = false)
+    @ColumnDefault("0")
+    private int views;
+
+    @Column(name = "comments", nullable = false)
+    @ColumnDefault("0")
+    private int comments;
+
+    @Column(name = "likes", nullable = false)
+    @ColumnDefault("0")
+    private int likes;
+
+    @Column(name = "start_date", nullable = false)
+    private LocalTime startDate;
+
+    @Column(name = "end_date", nullable = false)
+    private LocalTime endDate;
 
     @Column(name = "created_at", nullable = false)
     private LocalTime createdAt;
@@ -45,10 +61,8 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalTime updatedAt;
 
-    @OneToMany(mappedBy = "user")
-    private List<RefreshTokenEntity> refreshTokens;
-
-    @OneToOne(mappedBy = "user")
+    @ManyToOne
+    @JoinColumn(name = "statistic_id", referencedColumnName = "id")
     private StatisticEntity statistic;
 
     @PrePersist
@@ -61,5 +75,4 @@ public class UserEntity {
     protected void onUpdate() {
         this.updatedAt = LocalTime.now();
     }
-
 }
