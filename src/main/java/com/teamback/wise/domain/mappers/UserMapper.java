@@ -19,5 +19,6 @@ public interface UserMapper {
     @Mapping(target = "refreshTokens", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "statistic", ignore = true)
     UserEntity mapUserCreateRequestToUserEntity(UserCreateRequest userCreateRequest);
 }

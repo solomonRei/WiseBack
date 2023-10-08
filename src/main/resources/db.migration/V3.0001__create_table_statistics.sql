@@ -1,12 +1,12 @@
 CREATE TABLE IF NOT EXISTS "statistics"
 (
     id               VARCHAR(255) PRIMARY KEY,
-    view_count       INTEGER DEFAULT 0 NOT NULL,
-    video_count      INTEGER DEFAULT 0 NOT NULL,
-    subscriber_count INTEGER DEFAULT 0 NOT NULL,
-    created_at       TIMESTAMP         NOT NULL,
-    updated_at       TIMESTAMP         NOT NULL,
-    user_id          VARCHAR(255)      NOT NULL REFERENCES users (id)
+    view_count       INTEGER                  DEFAULT 0                 NOT NULL,
+    video_count      INTEGER                  DEFAULT 0                 NOT NULL,
+    subscriber_count INTEGER                  DEFAULT 0                 NOT NULL,
+    created_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at       TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    user_id          VARCHAR(255)                                       NOT NULL REFERENCES users (id)
 );
 
 COMMENT ON COLUMN statistics.id IS 'This is the ID of the statistics so that the statistics can reference it';
