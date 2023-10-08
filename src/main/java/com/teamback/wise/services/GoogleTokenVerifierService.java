@@ -48,7 +48,6 @@ public class GoogleTokenVerifierService {
             } else {
                 log.error("Invalid ID token.");
 
-                //TODO: use GlobalExceptionHandler
                 throw new GoogleIdTokenWrongException(googleId);
             }
 
