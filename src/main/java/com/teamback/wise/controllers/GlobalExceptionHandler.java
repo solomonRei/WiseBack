@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
                 status.getReasonPhrase(),
                 exception.getMessage()
         );
-        return new ResponseEntity<>(response, status);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(value = {FailedGoogleAuthException.class})
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
                 status.getReasonPhrase(),
                 exception.getMessage()
         );
-        return new ResponseEntity<>(response, status);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(value = {ExpiredRefreshTokenException.class})
@@ -48,19 +48,19 @@ public class GlobalExceptionHandler {
                 status.getReasonPhrase(),
                 exception.getMessage()
         );
-        return new ResponseEntity<>(response, status);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(value = {InvalidRefreshTokenException.class})
     public ResponseEntity<ExceptionResponse> invalidRefreshTokenException(InvalidRefreshTokenException exception) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
         ExceptionResponse response =  new ExceptionResponse(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
                 exception.getMessage()
         );
-        return new ResponseEntity<>(response, status);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
 }
