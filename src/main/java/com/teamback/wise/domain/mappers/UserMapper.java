@@ -15,10 +15,10 @@ public interface UserMapper {
 
     UserCreateRequest mapGoogleUserResponseToUserCreateRequest(GoogleUserResponse googleUserResponse);
 
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "refreshTokens", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "refreshTokens", ignore = true)
     @Mapping(target = "statistic", ignore = true)
     UserEntity mapUserCreateRequestToUserEntity(UserCreateRequest userCreateRequest);
 }

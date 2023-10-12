@@ -56,7 +56,7 @@ public class StatisticEntity {
     @OneToMany(mappedBy = "statistic", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<StatisticsCountryEntity> statisticsCountry;
 
-    @OneToOne
+    @OneToOne(mappedBy = "statistic")
     private UserEntity user;
 
     @PrePersist

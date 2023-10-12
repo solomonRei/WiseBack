@@ -1,5 +1,6 @@
 package com.teamback.wise.domain.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -48,7 +49,7 @@ public class UserEntity {
     @OneToMany(mappedBy = "user")
     private List<RefreshTokenEntity> refreshTokens;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     private StatisticEntity statistic;
 
     @PrePersist
