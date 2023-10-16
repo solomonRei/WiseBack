@@ -23,11 +23,15 @@ public class YoutubeController {
 
     private final YouTubeService youtubeService;
 
-    @GetMapping("/statistics/{channelId:[A-Za-z0-9_-]+}")
+    @GetMapping("/statistics/{channelId}")
     public ResponseEntity<Object> getChannelStatistics(@PathVariable String channelId) {
+        if (!youtubeService.isChannelIdValid(channelId)) {
+            return ResponseEntity.badRequest().body("Invalid channel id");
+        }
+
         var response = youTubeApiKeyService.getChannelStatistics(channelId);
         var responseSecured = youtubeServiceSecured.getChannelStatistics(channelId);
-        //TODO: add response from youtubeService
+//        //TODO: add response from youtubeService
         return ResponseEntity.ok(response);
     }
 }

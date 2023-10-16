@@ -25,8 +25,8 @@ public class JWTTokenServiceImpl implements JWTTokenService {
     public TokenDto generateAccessToken(String userId) {
         log.info("Generating access token for user: " + userId);
 
-        Date expirationTime = Date.from(Instant.now().plusSeconds(jwtConfigProperties.getExpirationTimeAccessTokenMn() * 60L));
-        JwtClaimsSet claimsSet = JwtClaimsSet.builder()
+        var expirationTime = Date.from(Instant.now().plusSeconds(jwtConfigProperties.getExpirationTimeAccessTokenMn() * 60L));
+        var claimsSet = JwtClaimsSet.builder()
                 .issuer(jwtConfigProperties.getIssuer())
                 .issuedAt(Instant.now())
                 .expiresAt(expirationTime.toInstant())
@@ -34,7 +34,7 @@ public class JWTTokenServiceImpl implements JWTTokenService {
                 .build();
 
         return TokenDto.builder()
-                .token(this.encoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue())
+                .token(encoder.encode(JwtEncoderParameters.from(claimsSet)).getTokenValue())
                 .expirationTime(expirationTime.toInstant())
                 .build();
     }

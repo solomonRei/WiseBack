@@ -1,24 +1,22 @@
 package com.teamback.wise.services.youtube.api.Impl;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.teamback.wise.configurations.GoogleConfigurationProperties;
+import com.teamback.wise.exceptions.youtube.AuthenticatedUserChannelIdNotFoundException;
 import com.teamback.wise.exceptions.youtube.YoutubeAuthErrorException;
 import com.teamback.wise.services.youtube.api.YouTubeOauth2KeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -50,7 +48,7 @@ public class YouTubeOauth2KeyServiceImpl implements YouTubeOauth2KeyService {
     public YouTube initService() throws GeneralSecurityException, IOException {
 
         final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        Credential credential = new GoogleCredential().setAccessToken(ACCESS_TOKEN);
+        var credential = new GoogleCredential().setAccessToken(ACCESS_TOKEN);
 
         return new YouTube.Builder(httpTransport, new GsonFactory(), credential)
                 .setApplicationName(googleConfigurationProperties.getGoogleApplicationName())
@@ -67,11 +65,11 @@ public class YouTubeOauth2KeyServiceImpl implements YouTubeOauth2KeyService {
         List<Channel> channels = response.getItems();
 
         if (channels != null && !channels.isEmpty()) {
-            Channel userChannel = channels.get(0);
+            var userChannel = channels.get(0);
             return userChannel.getId();
         }
 
-        return null;
+        throw new AuthenticatedUserChannelIdNotFoundException("Authenticated user channel id not found");
     }
 
 
@@ -82,29 +80,32 @@ public class YouTubeOauth2KeyServiceImpl implements YouTubeOauth2KeyService {
             if (channelId == null) {
                 channelId = getAuthenticatedUserChannelId(youtubeService);
             }
-            String apiUrl = API_URL + "?ids=channel==" + channelId +
-                    "&startDate=" + START_DATE +
-                    "&endDate=" + END_DATE +
-                    "&metrics=" + METRICS +
-                    "&dimensions=" + DIMENSIONS +
-                    "&sort=" + SORT;
 
-            HttpRequestFactory requestFactory = new NetHttpTransport().createRequestFactory(request -> {
+            var builder = UriComponentsBuilder.fromUriString(API_URL)
+                    .queryParam("ids", "channel==" + channelId)
+                    .queryParam("startDate", START_DATE)
+                    .queryParam("endDate", END_DATE)
+                    .queryParam("metrics", METRICS)
+                    .queryParam("dimensions", DIMENSIONS)
+                    .queryParam("sort", SORT);
+
+            var apiUrl = builder.toUriString();
+            var requestFactory = new NetHttpTransport().createRequestFactory(request -> {
                 HttpHeaders headers = request.getHeaders();
                 headers.setAuthorization("Bearer " + ACCESS_TOKEN);
             });
 
-            HttpRequest request = requestFactory.buildGetRequest(new GenericUrl(apiUrl));
-            HttpResponse response = request.execute();
+            var request = requestFactory.buildGetRequest(new GenericUrl(apiUrl));
+            var response = request.execute();
 
-            String responseBody = response.parseAsString();
+            var responseBody = response.parseAsString();
             System.out.println("Response: " + responseBody);
 
-            YouTube.Channels.List request2 = youtubeService
+            var requestAuthUserStatistics = youtubeService
                     .channels()
                     .list(Collections.singletonList("statistics"))
                     .set("id", Collections.singletonList(channelId));
-            return request2.execute();
+            return requestAuthUserStatistics.execute();
 
         } catch (IOException | GeneralSecurityException e) {
             log.error("Error during request to Youtube " + e.getMessage());

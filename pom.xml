@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.teamback</groupId>
     <artifactId>wise</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.2</version>
     <name>wise-api</name>
     <packaging>jar</packaging>
     <description>Backend api for project Wise</description>
@@ -86,6 +86,11 @@
             <groupId>com.google.apis</groupId>
             <artifactId>google-api-services-youtube</artifactId>
             <version>v3-rev20231008-2.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
         </dependency>
 
         <!-- Database dependencies -->

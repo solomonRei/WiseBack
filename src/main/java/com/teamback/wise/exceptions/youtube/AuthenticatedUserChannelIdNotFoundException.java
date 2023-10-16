@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class ApiKeyNotFoundException extends RuntimeException {
+public class AuthenticatedUserChannelIdNotFoundException extends RuntimeException {
 
-    public ApiKeyNotFoundException(String message) {
+    public AuthenticatedUserChannelIdNotFoundException(String message) {
         super(message);
     }
 

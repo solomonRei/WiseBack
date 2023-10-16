@@ -1,28 +1,18 @@
 package com.teamback.wise.services.youtube.Impl;
 
-import com.teamback.wise.domain.repositories.StatisticRepository;
 import com.teamback.wise.services.youtube.YouTubeService;
-import com.teamback.wise.services.youtube.api.YouTubeApiKeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+
+import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
 public class YouTubeServiceImpl implements YouTubeService {
 
-    private final StatisticRepository statisticRepository;
-
-    private final YouTubeApiKeyService youTubeApiKeyService;
-
-    public void getStatistics(String channelId) {
-
-        // TODO implement here
-    }
-
-    public void saveChannelStatistics(String channelId) {
-        var data = youTubeApiKeyService.getChannelStatistics(channelId);
-        if (data != null) {
-            // TODO implement here
-        }
+    public boolean isChannelIdValid(String channelId) {
+        String regexPattern = "^[A-Za-z0-9_-]+$";
+        Pattern pattern = Pattern.compile(regexPattern);
+        return pattern.matcher(channelId).matches();
     }
 }

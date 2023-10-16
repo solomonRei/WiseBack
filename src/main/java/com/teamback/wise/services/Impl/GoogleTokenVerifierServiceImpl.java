@@ -1,8 +1,6 @@
 package com.teamback.wise.services.Impl;
 
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -15,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 @Slf4j
@@ -29,15 +29,15 @@ public class GoogleTokenVerifierServiceImpl implements GoogleTokenVerifierServic
 
         try {
 
-            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+            var verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                     .setAudience(Collections.singletonList(googleConfigurationProperties.getClientId()))
                     .build();
 
-            GoogleIdToken idToken = verifier.verify(googleId);
+            var idToken = verifier.verify(googleId);
             if (idToken != null) {
-                Payload payload = idToken.getPayload();
-                String userId = payload.getSubject();
-                String email = payload.getEmail();
+                var payload = idToken.getPayload();
+                var userId = payload.getSubject();
+                var email = payload.getEmail();
 
                 log.info("User is authenticated");
 
@@ -48,12 +48,10 @@ public class GoogleTokenVerifierServiceImpl implements GoogleTokenVerifierServic
 
             } else {
                 log.error("Invalid ID token.");
-
-                //TODO: use GlobalExceptionHandler
                 throw new GoogleIdTokenWrongException(googleId);
             }
 
-        } catch (Exception e) {
+        } catch (GeneralSecurityException | IOException | IllegalArgumentException e) {
             log.error("Error authenticating user with Google ID.");
             throw new FailedGoogleAuthException(e.getMessage());
         }
