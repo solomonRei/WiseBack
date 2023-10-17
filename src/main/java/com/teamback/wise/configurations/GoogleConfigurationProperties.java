@@ -11,4 +11,9 @@ public class GoogleConfigurationProperties {
     @Value("${google.client-id}")
     private String ClientId;
 
+    @Value("${google.application-name}")
+    private String googleApplicationName;
+
+    @Value("${youtube.api.keys.file.path}")
+    private String youTubeKeysFilePath;
 }

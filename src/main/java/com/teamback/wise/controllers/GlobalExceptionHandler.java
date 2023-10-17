@@ -4,6 +4,7 @@ import com.teamback.wise.exceptions.auth.ExpiredRefreshTokenException;
 import com.teamback.wise.exceptions.auth.FailedGoogleAuthException;
 import com.teamback.wise.exceptions.auth.GoogleIdTokenWrongException;
 import com.teamback.wise.exceptions.auth.InvalidRefreshTokenException;
+import com.teamback.wise.exceptions.youtube.AuthenticatedUserChannelIdNotFoundException;
 import com.teamback.wise.models.responses.ExceptionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +62,18 @@ public class GlobalExceptionHandler {
                 exception.getMessage()
         );
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    @ExceptionHandler(value = {AuthenticatedUserChannelIdNotFoundException.class})
+    public ResponseEntity<ExceptionResponse> authenticatedUserChannelIdNotFound(AuthenticatedUserChannelIdNotFoundException exception) {
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        ExceptionResponse response =  new ExceptionResponse(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                exception.getMessage()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 }
