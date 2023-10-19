@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.teamback</groupId>
     <artifactId>wise</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.5</version>
     <name>wise-api</name>
     <packaging>jar</packaging>
     <description>Backend api for project Wise</description>
@@ -65,6 +65,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-docker-compose</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <version>3.1.2</version>
+        </dependency>
+
 
         <!--        Google dependencies -->
         <dependency>
