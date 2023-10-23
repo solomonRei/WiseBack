@@ -62,7 +62,7 @@ public class UserProfileEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalTime updatedAt;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private UserEntity user;
 
