@@ -35,6 +35,9 @@ public class StatisticEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column(name = "youtube_channel_id", nullable = false)
+    private String youtubeChannelId;
+
     @Column(name = "view_count", nullable = false)
     @ColumnDefault("0")
     private int viewCount;
