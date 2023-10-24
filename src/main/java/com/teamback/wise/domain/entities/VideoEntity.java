@@ -1,16 +1,11 @@
 package com.teamback.wise.domain.entities;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -22,7 +17,6 @@ import lombok.Setter;
 
 import java.time.LocalTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,18 +26,27 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "users")
-public class UserEntity {
+@Table(name = "videos")
+public class VideoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false)
-    private String username;
+    @Column(name = "video_id", unique = true, nullable = false)
+    private String videoId;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    @Column(name = "possible_idea")
+    private String possibleIdea;
+
+    @Column
+    private String summary;
+
+    @Column(columnDefinition = "jsonb")
+    private String tags;
+
+    @Column(name = "possible_tags", columnDefinition = "jsonb")
+    private String possibleTags;
 
     @Column(name = "created_at", nullable = false)
     private LocalTime createdAt;
@@ -51,19 +54,8 @@ public class UserEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalTime updatedAt;
 
-    @OneToMany(mappedBy = "user")
-    private List<RefreshTokenEntity> refreshTokens;
-
-    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private StatisticEntity statistic;
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_videos",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "video_id")
-    )
-    private Set<VideoEntity> videos = new HashSet<>();
+    @ManyToMany(mappedBy = "videos")
+    private Set<UserEntity> users = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {
@@ -75,5 +67,6 @@ public class UserEntity {
     protected void onUpdate() {
         this.updatedAt = LocalTime.now();
     }
+
 
 }
