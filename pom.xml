@@ -71,6 +71,12 @@
             <version>3.1.2</version>
         </dependency>
 
+        <!--        RabbitMQ dependencies-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
+
 
         <!--        Google dependencies -->
         <dependency>
