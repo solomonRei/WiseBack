@@ -18,7 +18,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Builder
@@ -50,16 +51,16 @@ public class StatisticsCountryEntity {
     private int likes;
 
     @Column(name = "start_date", nullable = false)
-    private LocalTime startDate;
+    private ZonedDateTime startDate;
 
     @Column(name = "end_date", nullable = false)
-    private LocalTime endDate;
+    private ZonedDateTime endDate;
 
     @Column(name = "created_at", nullable = false)
-    private LocalTime createdAt;
+    private ZonedDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalTime updatedAt;
+    private ZonedDateTime updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "statistic_id", referencedColumnName = "id")
@@ -67,12 +68,13 @@ public class StatisticsCountryEntity {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalTime.now();
+        this.createdAt = ZonedDateTime.now(ZoneId.of("Europe/London"));
         this.updatedAt = this.createdAt;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalTime.now();
+        this.updatedAt = ZonedDateTime.now(ZoneId.of("Europe/London"));
     }
+
 }

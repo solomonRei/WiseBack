@@ -8,6 +8,7 @@ import com.teamback.wise.models.responses.RefreshTokenResponse;
 import com.teamback.wise.services.GoogleTokenVerifierService;
 import com.teamback.wise.services.RefreshTokenService;
 import com.teamback.wise.services.UserAuthenticationService;
+import com.teamback.wise.services.youtube.YouTubeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,11 +30,14 @@ public class AuthenticationController {
 
     private final RefreshTokenService refreshTokenService;
 
+    private final YouTubeService youTubeService;
+
     @PostMapping("/registration")
     public ResponseEntity<AuthResponse> registration(@Valid @RequestBody RegistrationRequest RegistrationRequest) {
         log.info("Registering user with Google ID.");
         GoogleUserResponse googleUserResponse = googleTokenVerifierService.verifyGoogleId(RegistrationRequest.getGoogleIdToken());
         AuthResponse response = userAuthenticationService.registration(googleUserResponse);
+        youTubeService.updateOrInsertChannelCountryStatistics(RegistrationRequest.getGoogleIdToken());
 
         log.info("User is successfully registered.");
         return ResponseEntity.status(201).body(response);

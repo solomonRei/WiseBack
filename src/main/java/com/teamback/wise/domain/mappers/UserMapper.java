@@ -15,6 +15,7 @@ public interface UserMapper {
 
     UserCreateRequest mapGoogleUserResponseToUserCreateRequest(GoogleUserResponse googleUserResponse);
 
+    @Mapping(target = "videos", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

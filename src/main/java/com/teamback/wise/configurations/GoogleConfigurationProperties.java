@@ -16,4 +16,7 @@ public class GoogleConfigurationProperties {
 
     @Value("${youtube.api.keys.file.path}")
     private String youTubeKeysFilePath;
+
+    @Value("${youtube.api.url}")
+    private String youTubeApiUrl;
 }

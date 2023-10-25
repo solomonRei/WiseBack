@@ -9,13 +9,12 @@ import lombok.Setter;
 @Setter
 public class StatisticsByIdResponse {
 
+    private String channelId;
+
     private String viewCount;
 
     private String subscriberCount;
 
-    private String hiddenSubscriberCount;
-
     private String videoCount;
 
-    private String commentCount;
 }

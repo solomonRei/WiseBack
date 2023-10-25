@@ -1,11 +1,18 @@
 package com.teamback.wise.utils;
 
+import com.teamback.wise.domain.entities.UserEntity;
 import com.teamback.wise.exceptions.user.UserNotAuthenticatedException;
+import com.teamback.wise.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class AuthenticatedUserUtils {
+
+    private final UserService userService;
 
     public String getCurrentUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -16,12 +23,8 @@ public class AuthenticatedUserUtils {
         throw new UserNotAuthenticatedException("User is not authenticated.");
     }
 
-    public UserDetails getCurrentUserDetails() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            return (UserDetails) authentication.getPrincipal();
-        }
-
-        throw new UserNotAuthenticatedException("User is not authenticated.");
+    public UserEntity getCurrentUserEntity() {
+        String username = getCurrentUsername();
+        return userService.getUserById(username);
     }
 }

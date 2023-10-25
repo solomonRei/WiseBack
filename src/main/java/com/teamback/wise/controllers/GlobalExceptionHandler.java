@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {GoogleIdTokenWrongException.class})
     public ResponseEntity<ExceptionResponse> wrongGoogleIdTokenException(GoogleIdTokenWrongException exception) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        ExceptionResponse response =  new ExceptionResponse(
+        ExceptionResponse response = new ExceptionResponse(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {FailedGoogleAuthException.class})
     public ResponseEntity<ExceptionResponse> failedGoogleAuthException(FailedGoogleAuthException exception) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        ExceptionResponse response =  new ExceptionResponse(
+        ExceptionResponse response = new ExceptionResponse(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {ExpiredRefreshTokenException.class})
     public ResponseEntity<ExceptionResponse> expiredRefreshTokenException(ExpiredRefreshTokenException exception) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        ExceptionResponse response =  new ExceptionResponse(
+        ExceptionResponse response = new ExceptionResponse(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {InvalidRefreshTokenException.class})
     public ResponseEntity<ExceptionResponse> invalidRefreshTokenException(InvalidRefreshTokenException exception) {
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        ExceptionResponse response =  new ExceptionResponse(
+        ExceptionResponse response = new ExceptionResponse(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {AuthenticatedUserChannelIdNotFoundException.class})
     public ResponseEntity<ExceptionResponse> authenticatedUserChannelIdNotFound(AuthenticatedUserChannelIdNotFoundException exception) {
         HttpStatus status = HttpStatus.NOT_FOUND;
-        ExceptionResponse response =  new ExceptionResponse(
+        ExceptionResponse response = new ExceptionResponse(
                 LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
