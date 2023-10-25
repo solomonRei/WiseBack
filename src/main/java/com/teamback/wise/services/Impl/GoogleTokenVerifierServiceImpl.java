@@ -1,9 +1,12 @@
 package com.teamback.wise.services.Impl;
 
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.teamback.wise.configurations.GoogleConfigurationProperties;
 import com.teamback.wise.exceptions.auth.FailedGoogleAuthException;
 import com.teamback.wise.exceptions.auth.GoogleIdTokenWrongException;
@@ -14,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,36 +25,34 @@ public class GoogleTokenVerifierServiceImpl implements GoogleTokenVerifierServic
 
     private final GoogleConfigurationProperties googleConfigurationProperties;
 
-    public GoogleUserResponse verifyGoogleId(String googleId) {
-        log.info("Verifying Google ID: " + googleId);
-
+    public GoogleUserResponse verifyGoogleId(String accessToken) {
         try {
+            log.info("Verifying Google Access Token: " + accessToken);
+            var httpTransport = new NetHttpTransport();
+            HttpRequest request = httpTransport.createRequestFactory().buildGetRequest(
+                    new GenericUrl(googleConfigurationProperties.getGoogleApiUrl() + "tokeninfo?access_token=" + accessToken));
 
-            var verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
-                    .setAudience(Collections.singletonList(googleConfigurationProperties.getClientId()))
-                    .build();
+            HttpResponse response = request.execute();
 
-            var idToken = verifier.verify(googleId);
-            if (idToken != null) {
-                var payload = idToken.getPayload();
-                var userId = payload.getSubject();
-                var email = payload.getEmail();
+            if (response.getStatusCode() == 200) {
+                log.info("Google Access Token is valid.");
+                Gson gson = new Gson();
+                JsonObject jsonResponse = gson.fromJson(response.parseAsString(), JsonObject.class);
 
-                log.info("User is authenticated");
+                String userId = jsonResponse.get("sub").getAsString();
+                String email = jsonResponse.get("email").getAsString();
 
                 return GoogleUserResponse.builder()
                         .username(userId)
                         .email(email)
                         .build();
-
             } else {
-                log.error("Invalid ID token.");
-                throw new GoogleIdTokenWrongException(googleId);
+                log.error("Invalid access token. Status not 200.");
+                throw new GoogleIdTokenWrongException(accessToken);
             }
-
-        } catch (GeneralSecurityException | IOException | IllegalArgumentException e) {
+        } catch (IOException e) {
             log.error("Error authenticating user with Google ID.");
-            throw new FailedGoogleAuthException(e.getMessage());
+            throw new FailedGoogleAuthException("Server Google authentication error.");
         }
     }
 }
