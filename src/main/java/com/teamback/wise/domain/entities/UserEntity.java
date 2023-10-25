@@ -60,6 +60,10 @@ public class UserEntity {
     @JsonManagedReference
     private StatisticEntity statistic;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private UserProfileEntity userProfile;
+
     @ManyToMany
     @JoinTable(
             name = "user_videos",
