@@ -7,7 +7,10 @@ import com.teamback.wise.models.requests.UserCreateRequest;
 import com.teamback.wise.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,5 +29,11 @@ public class UserServiceImpl implements UserService {
                     userRepository.save(newUser);
                     return newUser;
                 });
+    }
+
+    @Override
+    public UserEntity getUserById(String id) {
+        return userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + id));
     }
 }

@@ -39,13 +39,18 @@ public class YouTubeApiKeyServiceImpl implements YouTubeApiKeyService {
     private final List<String> partsStatistics = Collections.singletonList("statistics");
 
     @Override
-    public YouTube initService() throws GeneralSecurityException, IOException {
-        final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+    public YouTube initService() {
+        try {
+            final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
-        return new YouTube.Builder(httpTransport, new GsonFactory(), null)
-                .setApplicationName(googleConfigurationProperties.getGoogleApplicationName())
-                .setYouTubeRequestInitializer(new YouTubeRequestInitializer(getRandomKey()))
-                .build();
+            return new YouTube.Builder(httpTransport, new GsonFactory(), null)
+                    .setApplicationName(googleConfigurationProperties.getGoogleApplicationName())
+                    .setYouTubeRequestInitializer(new YouTubeRequestInitializer(getRandomKey()))
+                    .build();
+        } catch (GeneralSecurityException | IOException e) {
+            log.error("Error during request to Youtube " + e.getMessage());
+            throw new YoutubeAuthErrorException("Error in authorization in Youtube");
+        }
     }
 
     @Override
@@ -66,7 +71,7 @@ public class YouTubeApiKeyServiceImpl implements YouTubeApiKeyService {
 
             return response;
 
-        } catch (GeneralSecurityException | IOException e) {
+        } catch (IOException e) {
             log.error("Error during request to Youtube " + e.getMessage());
             throw new YoutubeAuthErrorException("Error in authorization in Youtube");
         }

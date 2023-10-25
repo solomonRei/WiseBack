@@ -1,10 +1,13 @@
 package com.teamback.wise.services.youtube.api;
 
 import com.google.api.services.youtube.YouTube;
-
-import java.io.IOException;
+import com.google.api.services.youtube.model.ChannelListResponse;
 
 public interface YouTubeOauth2KeyService extends YouTubeKeyService {
 
-    String getAuthenticatedUserChannelId(YouTube youtube) throws IOException;
+    YouTube initService(String accessToken);
+
+    ChannelListResponse getChannelStatistics(String accessToken);
+
+    String getAuthenticatedUserChannelId(String accessToken);
 }

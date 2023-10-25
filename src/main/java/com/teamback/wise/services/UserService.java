@@ -7,4 +7,5 @@ public interface UserService {
 
     UserEntity createOrGetUser(UserCreateRequest userCreateRequest);
 
+    UserEntity getUserById(String username);
 }

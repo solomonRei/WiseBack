@@ -1,5 +1,6 @@
 package com.teamback.wise.domain.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,15 +48,16 @@ public class UserEntity {
     private String email;
 
     @Column(name = "created_at", nullable = false)
-    private LocalTime createdAt;
+    private ZonedDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
-    private LocalTime updatedAt;
+    private ZonedDateTime updatedAt;
 
     @OneToMany(mappedBy = "user")
     private List<RefreshTokenEntity> refreshTokens;
 
-    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private StatisticEntity statistic;
 
     @ManyToMany
@@ -67,13 +70,13 @@ public class UserEntity {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalTime.now();
+        this.createdAt = ZonedDateTime.now(ZoneId.of("Europe/London"));
         this.updatedAt = this.createdAt;
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalTime.now();
+        this.updatedAt = ZonedDateTime.now(ZoneId.of("Europe/London"));
     }
 
 }

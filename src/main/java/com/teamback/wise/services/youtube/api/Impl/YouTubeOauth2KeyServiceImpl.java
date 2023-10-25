@@ -1,6 +1,5 @@
 package com.teamback.wise.services.youtube.api.Impl;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.http.HttpHeaders;
@@ -9,10 +8,14 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.AccessToken;
+import com.google.auth.oauth2.GoogleCredentials;
 import com.teamback.wise.configurations.GoogleConfigurationProperties;
 import com.teamback.wise.exceptions.youtube.AuthenticatedUserChannelIdNotFoundException;
 import com.teamback.wise.exceptions.youtube.YoutubeAuthErrorException;
 import com.teamback.wise.services.youtube.api.YouTubeOauth2KeyService;
+import com.teamback.wise.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -30,11 +33,9 @@ public class YouTubeOauth2KeyServiceImpl implements YouTubeOauth2KeyService {
 
     private final GoogleConfigurationProperties googleConfigurationProperties;
 
-    private static final String API_URL = "https://youtubeanalytics.googleapis.com/v2/reports";
+    private final DateUtils dateUtils;
 
     private static final String START_DATE = "2014-01-01";
-
-    private static final String END_DATE = "2023-12-31";
 
     private static final String METRICS = "views,estimatedMinutesWatched,averageViewDuration,averageViewPercentage,subscribersGained";
 
@@ -42,20 +43,24 @@ public class YouTubeOauth2KeyServiceImpl implements YouTubeOauth2KeyService {
 
     private static final String SORT = "day";
 
-    private static final String ACCESS_TOKEN = "";
-
     @Override
-    public YouTube initService() throws GeneralSecurityException, IOException {
+    public YouTube initService(String accessToken) {
+        try {
+            final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
 
-        final NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
-        var credential = new GoogleCredential().setAccessToken(ACCESS_TOKEN);
+            GoogleCredentials credentials = GoogleCredentials.create(new AccessToken(accessToken, null));
+            HttpCredentialsAdapter adapter = new HttpCredentialsAdapter(credentials);
 
-        return new YouTube.Builder(httpTransport, new GsonFactory(), credential)
-                .setApplicationName(googleConfigurationProperties.getGoogleApplicationName())
-                .build();
+            return new YouTube.Builder(httpTransport, new GsonFactory(), adapter)
+                    .setApplicationName(googleConfigurationProperties.getGoogleApplicationName())
+                    .build();
+        } catch (GeneralSecurityException | IOException e) {
+            log.error("Error during request to Youtube " + e.getMessage());
+            throw new YoutubeAuthErrorException("Error in authorization in Youtube");
+        }
     }
 
-    public String getAuthenticatedUserChannelId(YouTube youtube) throws IOException {
+    private String getAuthenticatedUserChannelIdMethod(YouTube youtube) throws IOException {
         YouTube.Channels.List channelsListRequest = youtube
                 .channels()
                 .list(Collections.singletonList("id"))
@@ -72,19 +77,28 @@ public class YouTubeOauth2KeyServiceImpl implements YouTubeOauth2KeyService {
         throw new AuthenticatedUserChannelIdNotFoundException("Authenticated user channel id not found");
     }
 
+    public String getAuthenticatedUserChannelId(String accessToken) {
+        try {
+            return getAuthenticatedUserChannelIdMethod(initService(accessToken));
+        } catch (IOException e) {
+            log.error("Error during request to Youtube " + e.getMessage());
+            throw new YoutubeAuthErrorException("Error in authorization in Youtube");
+        }
+    }
 
     @Override
-    public ChannelListResponse getChannelStatistics(String channelId) {
+    public ChannelListResponse getChannelStatistics(String accessToken) {
         try {
-            var youtubeService = initService();
+            var youtubeService = initService(accessToken);
+            var channelId = getAuthenticatedUserChannelId(accessToken);
             if (channelId == null) {
-                channelId = getAuthenticatedUserChannelId(youtubeService);
+                throw new AuthenticatedUserChannelIdNotFoundException("Authenticated user channel id not found");
             }
 
-            var builder = UriComponentsBuilder.fromUriString(API_URL)
+            var builder = UriComponentsBuilder.fromUriString(googleConfigurationProperties.getYouTubeApiUrl() + "reports")
                     .queryParam("ids", "channel==" + channelId)
                     .queryParam("startDate", START_DATE)
-                    .queryParam("endDate", END_DATE)
+                    .queryParam("endDate", dateUtils.formatToRequiredDate(dateUtils.getCurrentDate()))
                     .queryParam("metrics", METRICS)
                     .queryParam("dimensions", DIMENSIONS)
                     .queryParam("sort", SORT);
@@ -92,7 +106,7 @@ public class YouTubeOauth2KeyServiceImpl implements YouTubeOauth2KeyService {
             var apiUrl = builder.toUriString();
             var requestFactory = new NetHttpTransport().createRequestFactory(request -> {
                 HttpHeaders headers = request.getHeaders();
-                headers.setAuthorization("Bearer " + ACCESS_TOKEN);
+                headers.setAuthorization("Bearer " + accessToken);
             });
 
             var request = requestFactory.buildGetRequest(new GenericUrl(apiUrl));
@@ -107,7 +121,7 @@ public class YouTubeOauth2KeyServiceImpl implements YouTubeOauth2KeyService {
                     .set("id", Collections.singletonList(channelId));
             return requestAuthUserStatistics.execute();
 
-        } catch (IOException | GeneralSecurityException e) {
+        } catch (IOException e) {
             log.error("Error during request to Youtube " + e.getMessage());
             throw new YoutubeAuthErrorException("Error in authorization in Youtube");
         }

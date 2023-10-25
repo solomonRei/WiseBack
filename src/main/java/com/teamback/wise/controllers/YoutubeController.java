@@ -1,8 +1,9 @@
 package com.teamback.wise.controllers;
 
+import com.teamback.wise.domain.mappers.StatisticMapper;
+import com.teamback.wise.exceptions.youtube.ChannelIdNotValidException;
+import com.teamback.wise.models.responses.youtube.StatisticsByIdResponse;
 import com.teamback.wise.services.youtube.YouTubeService;
-import com.teamback.wise.services.youtube.api.YouTubeApiKeyService;
-import com.teamback.wise.services.youtube.api.YouTubeOauth2KeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,21 +18,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/youtube")
 public class YoutubeController {
 
-    private final YouTubeApiKeyService youTubeApiKeyService;
-
-    private final YouTubeOauth2KeyService youtubeServiceSecured;
-
     private final YouTubeService youtubeService;
 
     @GetMapping("/statistics/{channelId}")
-    public ResponseEntity<Object> getChannelStatistics(@PathVariable String channelId) {
+    public ResponseEntity<StatisticsByIdResponse> getChannelStatisticsById(@PathVariable String channelId) {
         if (!youtubeService.isChannelIdValid(channelId)) {
-            return ResponseEntity.badRequest().body("Invalid channel id");
+            throw new ChannelIdNotValidException("Channel id is not valid");
         }
 
-        var response = youTubeApiKeyService.getChannelStatistics(channelId);
-        var responseSecured = youtubeServiceSecured.getChannelStatistics(channelId);
-//        //TODO: add response from youtubeService
+        var publicStatistic = youtubeService.getChannelStatistics(channelId);
+        var response = StatisticMapper.INSTANCE.statisticEntityToStatisticResponse(publicStatistic);
         return ResponseEntity.ok(response);
     }
 }
