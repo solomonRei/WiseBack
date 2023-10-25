@@ -33,6 +33,13 @@ public class YoutubeController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/statistics")
+    public ResponseEntity<StatisticsByIdResponse> getChannelStatisticsAuthenticatedUser() {
+        var publicStatistic = youtubeService.getChannelStatistics();
+        var response = StatisticMapper.INSTANCE.statisticEntityToStatisticResponse(publicStatistic);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/profile/{channelId}")
     public ResponseEntity<ProfileByIdResponse> getProfileById(@PathVariable String channelId) {
         if (!youtubeService.isChannelIdValid(channelId)) {

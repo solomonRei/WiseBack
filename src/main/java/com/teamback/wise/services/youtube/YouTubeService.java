@@ -9,6 +9,8 @@ public interface YouTubeService {
 
     StatisticEntity getChannelStatistics(String channelId);
 
+    StatisticEntity getChannelStatistics();
+
     StatisticEntity updateOrInsertChannelStatistics(String channelId);
 
     UserProfileEntity getUserProfile(String channelId);

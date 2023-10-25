@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS "videos"
 (
     id            VARCHAR(255) PRIMARY KEY,
     video_id      VARCHAR(255) UNIQUE                                NOT NULL,
-    possible_idea VARCHAR(255)             DEFAULT NULL,
+    possible_idea VARCHAR(4000)            DEFAULT NULL,
     summary       VARCHAR(4000)            DEFAULT NULL,
     tags          JSONB                                              NOT NULL,
     possible_tags JSONB                                              NOT NULL,
