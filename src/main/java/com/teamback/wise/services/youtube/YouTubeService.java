@@ -8,6 +8,8 @@ public interface YouTubeService {
 
     StatisticEntity getChannelStatistics(String channelId);
 
+    StatisticEntity getChannelStatistics();
+
     StatisticEntity updateOrInsertChannelStatistics(String channelId);
 
     void updateOrInsertChannelCountryStatistics(String accessToken);

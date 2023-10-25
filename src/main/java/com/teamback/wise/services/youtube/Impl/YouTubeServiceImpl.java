@@ -30,6 +30,7 @@ public class YouTubeServiceImpl implements YouTubeService {
 
     private final AuthenticatedUserUtils authenticatedUserUtils;
 
+    @Override
     public StatisticEntity getChannelStatistics(String channelId) {
         var statisticFromDB = statisticRepository.findByYoutubeChannelId(channelId);
 
@@ -37,6 +38,19 @@ public class YouTubeServiceImpl implements YouTubeService {
 
         return statisticFromDB.orElseGet(() -> updateOrInsertChannelStatistics(channelId));
 
+    }
+
+    @Override
+    public StatisticEntity getChannelStatistics() {
+        var authenticatedUser = authenticatedUserUtils.getCurrentUserEntity();
+        var statistic = authenticatedUser.getStatistic();
+        if (statistic != null) {
+            log.info("Getting Statistic for channel: " + statistic.getYoutubeChannelId());
+            return statistic;
+        }
+
+        log.error("Channel statistics not found");
+        throw new ChannelStatisticNotFoundException("Channel statistics not found");
     }
 
     @Override
@@ -65,6 +79,7 @@ public class YouTubeServiceImpl implements YouTubeService {
         log.info("Updating or inserting Statistic for channel: ");
     }
 
+    @Override
     public boolean isChannelIdValid(String channelId) {
         var regexPattern = "^[A-Za-z0-9_-]+$";
         var pattern = Pattern.compile(regexPattern);
