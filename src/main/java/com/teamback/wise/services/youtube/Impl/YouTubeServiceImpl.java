@@ -1,10 +1,14 @@
 package com.teamback.wise.services.youtube.Impl;
 
 import com.teamback.wise.domain.entities.StatisticEntity;
+import com.teamback.wise.domain.entities.UserProfileEntity;
 import com.teamback.wise.domain.mappers.StatisticMapper;
+import com.teamback.wise.domain.mappers.UserProfileMapper;
 import com.teamback.wise.domain.repositories.StatisticRepository;
+import com.teamback.wise.domain.repositories.UserProfileRepository;
 import com.teamback.wise.domain.repositories.UserRepository;
 import com.teamback.wise.exceptions.youtube.ChannelStatisticNotFoundException;
+import com.teamback.wise.exceptions.youtube.UserProfileNotFoundException;
 import com.teamback.wise.services.youtube.YouTubeService;
 import com.teamback.wise.services.youtube.api.YouTubeApiKeyService;
 import com.teamback.wise.services.youtube.api.YouTubeOauth2KeyService;
@@ -21,6 +25,8 @@ import java.util.regex.Pattern;
 public class YouTubeServiceImpl implements YouTubeService {
 
     private final StatisticRepository statisticRepository;
+
+    private final UserProfileRepository userProfileRepository;
 
     private final UserRepository userRepository;
 
@@ -57,6 +63,34 @@ public class YouTubeServiceImpl implements YouTubeService {
         log.error("Channel statistics not found");
         throw new ChannelStatisticNotFoundException("Channel statistics not found");
     }
+
+    public UserProfileEntity getUserProfile(String channelId) {
+        var userProfileFromDB = userProfileRepository.findByYoutubeChannelId(channelId);
+
+        log.info("Getting User Profile for channel: " + channelId);
+
+        return userProfileFromDB.orElseGet(() -> updateOrInsertUserProfile(channelId));
+    }
+
+    @Override
+    public UserProfileEntity updateOrInsertUserProfile(String channelId) {
+        var userProfile = youTubeApiKeyService.getChannelProfile(channelId);
+
+        if (userProfile != null) {
+            log.info("Updating or inserting User Profile for channel: " + channelId);
+            var authenticatedUser = authenticatedUserUtils.getCurrentUserEntity();
+            var userProfileEntity = UserProfileMapper.INSTANCE.channelResponseToUserProfileEntity(userProfile.getItems().get(0), authenticatedUser);
+
+            authenticatedUser.setUserProfile(userProfileEntity);
+            authenticatedUser = userRepository.save(authenticatedUser);
+
+            return authenticatedUser.getUserProfile();
+        }
+
+        log.error("User profile not found");
+        throw new UserProfileNotFoundException("User profile not found");
+    }
+
 
     @Override
     public void updateOrInsertChannelCountryStatistics(String accessToken) {

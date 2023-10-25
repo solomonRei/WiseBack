@@ -37,6 +37,8 @@ public class YouTubeApiKeyServiceImpl implements YouTubeApiKeyService {
     private final Gson gson;
 
     private final List<String> partsStatistics = Collections.singletonList("statistics");
+    private final List<String> partsProfile = Collections.singletonList("snippet,brandingSettings");
+
 
     @Override
     public YouTube initService() {
@@ -64,6 +66,30 @@ public class YouTubeApiKeyServiceImpl implements YouTubeApiKeyService {
                     );
 
             log.info("Request to Youtube with parts: " + partsStatistics + " and id: " + channelId);
+
+            var response = request.execute();
+
+            log.info("Response from Youtube: " + response);
+
+            return response;
+
+        } catch (IOException e) {
+            log.error("Error during request to Youtube " + e.getMessage());
+            throw new YoutubeAuthErrorException("Error in authorization in Youtube");
+        }
+    }
+
+    @Override
+    public ChannelListResponse getChannelProfile(String channelId) {
+        try {
+            var youtubeService = initService();
+            var request = youtubeService.channels()
+                    .list(partsProfile)
+                    .setId(
+                            Collections.singletonList(channelId)
+                    );
+
+            log.info("Request to Youtube with parts: snippet,brandingSettings and id: " + channelId);
 
             var response = request.execute();
 
