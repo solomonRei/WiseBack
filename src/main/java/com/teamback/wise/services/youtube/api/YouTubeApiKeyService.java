@@ -8,4 +8,7 @@ public interface YouTubeApiKeyService extends YouTubeKeyService {
     YouTube initService();
 
     ChannelListResponse getChannelStatistics(String channelId);
-}
+
+    ChannelListResponse getChannelProfile(String channelId);
+
+    }
