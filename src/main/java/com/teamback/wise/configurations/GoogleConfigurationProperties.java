@@ -19,4 +19,7 @@ public class GoogleConfigurationProperties {
 
     @Value("${youtube.api.url}")
     private String youTubeApiUrl;
+
+    @Value("${google.api.url}")
+    private String googleApiUrl;
 }

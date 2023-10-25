@@ -4,5 +4,5 @@ import com.teamback.wise.models.responses.GoogleUserResponse;
 
 public interface GoogleTokenVerifierService {
 
-    GoogleUserResponse verifyGoogleId(String googleId);
+    GoogleUserResponse verifyGoogleId(String accessToken);
 }
