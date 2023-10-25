@@ -51,4 +51,10 @@ public class YoutubeController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/statistics")
+    public ResponseEntity<StatisticsByIdResponse> getChannelStatisticsAuthenticatedUser() {
+        var publicStatistic = youtubeService.getChannelStatistics();
+        var response = StatisticMapper.INSTANCE.statisticEntityToStatisticResponse(publicStatistic);
+        return ResponseEntity.ok(response);
+    }
 }
