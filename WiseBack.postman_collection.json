@@ -131,7 +131,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ3aXNlIiwic3ViIjoiYjQwMTU0ZWQtYTQ1Mi00NjE0LTlkZjctNDcxMjMyOGUzNTRiIiwiZXhwIjoxNjk4MjU4NjIxLCJpYXQiOjE2OTgyNTgwMjF9.tBrivMaG4LgmMqSf0uDsLwGlvY_vKKtbmdOcQJQpktg0_r6lb9LR7_RoGYQfQa730jjrIgA-mlS_zeg8_jsvvL6L5qXJN_E-O6X_lS4f9aX_P7-xxp1dZ6KLkBy5zuNp2u9mPg2-7UTWSGDGrIU-3gPd3O3t5L-vDgUkAMlzCymfGM8F36QYoj1sBCwfsKyKEiPivlqVRvvmwA0p4rOYXgZnY6X6XgwinM8gWz5r4wWfOqjcOIe0S_YTggNKzNYoX_F1Wcxt5A5RS65HoUrTou-XodpnJlbUqqGtbzoltASV0W2cSO0UBqK9VrErcr-mHP1-owOvT0hF_TLghwW7hA",
+							"value": "{{access_token}}",
 							"type": "string"
 						}
 					]
@@ -148,7 +148,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:8080/api/v1/youtube/profile/UCG6UeR4-qRCaBr1e6BlyZXQ",
+					"raw": "http://localhost:8080/api/v1/youtube/profile",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -158,8 +158,7 @@
 						"api",
 						"v1",
 						"youtube",
-						"profile",
-						"UCG6UeR4-qRCaBr1e6BlyZXQ"
+						"profile"
 					]
 				}
 			},

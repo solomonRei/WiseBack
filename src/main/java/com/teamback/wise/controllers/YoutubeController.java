@@ -9,6 +9,7 @@ import com.teamback.wise.services.youtube.YouTubeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ public class YoutubeController {
 
     private final YouTubeService youtubeService;
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/statistics/{channelId}")
     public ResponseEntity<StatisticsByIdResponse> getChannelStatisticsById(@PathVariable String channelId) {
         if (!youtubeService.isChannelIdValid(channelId)) {
@@ -33,6 +35,7 @@ public class YoutubeController {
         return ResponseEntity.ok(response);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsByIdResponse> getChannelStatisticsAuthenticatedUser() {
         var publicStatistic = youtubeService.getChannelStatistics();
@@ -40,12 +43,9 @@ public class YoutubeController {
         return ResponseEntity.ok(response);
     }
 
+    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("/profile")
     public ResponseEntity<ProfileByIdResponse> getProfileById() {
-//        if (!youtubeService.isChannelIdValid(channelId)) {
-//            throw new ChannelIdNotValidException("Channel id is not valid");
-//        }
-//        var userProfile = youtubeService.getUserProfile(channelId);
         var userProfile = youtubeService.getCurrentUserProfile();
         var response = UserProfileMapper.INSTANCE.userProfileEntityToProfileByIdResponse(userProfile);
 
