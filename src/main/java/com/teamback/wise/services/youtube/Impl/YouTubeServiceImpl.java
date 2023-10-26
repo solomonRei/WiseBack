@@ -1,6 +1,7 @@
 package com.teamback.wise.services.youtube.Impl;
 
 import com.teamback.wise.domain.entities.StatisticEntity;
+import com.teamback.wise.domain.entities.UserEntity;
 import com.teamback.wise.domain.entities.UserProfileEntity;
 import com.teamback.wise.domain.mappers.StatisticMapper;
 import com.teamback.wise.domain.mappers.UserProfileMapper;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.ZonedDateTime;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -78,6 +80,18 @@ public class YouTubeServiceImpl implements YouTubeService {
         throw new ChannelStatisticNotFoundException("Channel statistics not found");
     }
 
+    public UserProfileEntity getCurrentUserProfile() {
+        var authenticatedUser = authenticatedUserUtils.getCurrentUserEntity();
+        var channelId = authenticatedUser.getYoutubeChannelId();
+
+        if (authenticatedUser.getUserProfile() != null &&
+                authenticatedUser.getUserProfile().getUpdatedAt().isBefore(ZonedDateTime.now().minusMinutes(30))) {
+            return updateOrInsertUserProfile(channelId); // update user profile if last update was > 30 mins ago
+        }
+
+        return getUserProfile(channelId);
+    }
+
     public UserProfileEntity getUserProfile(String channelId) {
         var userProfileFromDB = userProfileRepository.findByYoutubeChannelId(channelId);
 
@@ -93,9 +107,18 @@ public class YouTubeServiceImpl implements YouTubeService {
         if (userProfile != null) {
             log.info("Updating or inserting User Profile for channel: " + channelId);
             var authenticatedUser = authenticatedUserUtils.getCurrentUserEntity();
-            var userProfileEntity = UserProfileMapper.INSTANCE.channelResponseToUserProfileEntity(userProfile.getItems().get(0), authenticatedUser);
 
-            authenticatedUser.setUserProfile(userProfileEntity);
+            var userProfileEntity = userProfileRepository.findByYoutubeChannelId(channelId);
+
+            if (userProfileEntity.isEmpty()) {
+                var userProfileEntityNew = UserProfileMapper.INSTANCE.channelResponseToUserProfileEntity(userProfile.getItems().get(0), authenticatedUser);
+                authenticatedUser.setUserProfile(userProfileEntityNew);
+                authenticatedUser = userRepository.save(authenticatedUser);
+
+                return authenticatedUser.getUserProfile();
+            }
+
+            authenticatedUser.setUserProfile(userProfileEntity.get());
             authenticatedUser = userRepository.save(authenticatedUser);
 
             return authenticatedUser.getUserProfile();
@@ -104,6 +127,7 @@ public class YouTubeServiceImpl implements YouTubeService {
         log.error("User profile not found");
         throw new UserProfileNotFoundException("User profile not found");
     }
+
 
 
     @Override

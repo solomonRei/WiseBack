@@ -36,7 +36,7 @@ public class AuthenticationController {
     public ResponseEntity<AuthResponse> registration(@Valid @RequestBody RegistrationRequest RegistrationRequest) {
         log.info("Registering user with Google ID.");
         GoogleUserResponse googleUserResponse = googleTokenVerifierService.verifyGoogleId(RegistrationRequest.getGoogleIdToken());
-        AuthResponse response = userAuthenticationService.registration(googleUserResponse);
+        AuthResponse response = userAuthenticationService.registration(googleUserResponse, RegistrationRequest.getGoogleIdToken());
         youTubeService.updateOrInsertChannelCountryStatistics(RegistrationRequest.getGoogleIdToken());
 
         log.info("User is successfully registered.");

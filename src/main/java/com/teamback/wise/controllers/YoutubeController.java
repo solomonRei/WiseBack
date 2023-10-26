@@ -6,6 +6,7 @@ import com.teamback.wise.exceptions.youtube.ChannelIdNotValidException;
 import com.teamback.wise.models.responses.youtube.ProfileByIdResponse;
 import com.teamback.wise.models.responses.youtube.StatisticsByIdResponse;
 import com.teamback.wise.services.youtube.YouTubeService;
+import com.teamback.wise.utils.AuthenticatedUserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -40,14 +41,15 @@ public class YoutubeController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/profile/{channelId}")
-    public ResponseEntity<ProfileByIdResponse> getProfileById(@PathVariable String channelId) {
-        if (!youtubeService.isChannelIdValid(channelId)) {
-            throw new ChannelIdNotValidException("Channel id is not valid");
-        }
-
-        var userProfile = youtubeService.getUserProfile(channelId);
+    @GetMapping("/profile")
+    public ResponseEntity<ProfileByIdResponse> getProfileById() {
+//        if (!youtubeService.isChannelIdValid(channelId)) {
+//            throw new ChannelIdNotValidException("Channel id is not valid");
+//        }
+//        var userProfile = youtubeService.getUserProfile(channelId);
+        var userProfile = youtubeService.getCurrentUserProfile();
         var response = UserProfileMapper.INSTANCE.userProfileEntityToProfileByIdResponse(userProfile);
+
         return ResponseEntity.ok(response);
     }
 

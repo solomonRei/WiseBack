@@ -47,6 +47,9 @@ public class UserEntity {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(unique = true, nullable = true)
+    private String youtubeChannelId;
+
     @Column(name = "created_at", nullable = false)
     private ZonedDateTime createdAt;
 

@@ -20,7 +20,7 @@ public interface UserProfileMapper {
 
     @Mapping(target = "youtubeChannelId", source = "channel.id")
     @Mapping(target = "youtubeChannelName", source = "channel.snippet.title")
-    @Mapping(target = "profilePictureUrl", source = "channel.snippet.thumbnails.default.url")
+    @Mapping(target = "profilePictureUrl", source = "channel.snippet.thumbnails.high.url")
     @Mapping(target = "youtubeHandle", source = "channel.snippet.customUrl")
     @Mapping(target = "youtubeRegistrationDate", expression = "java(parseYoutubeDate(channel.getSnippet().getPublishedAt()))")
     @Mapping(target = "createdAt", ignore = true)

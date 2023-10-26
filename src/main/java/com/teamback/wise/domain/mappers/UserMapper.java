@@ -21,5 +21,7 @@ public interface UserMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "refreshTokens", ignore = true)
     @Mapping(target = "statistic", ignore = true)
+    @Mapping(target = "youtubeChannelId", ignore = true)
+    @Mapping(target = "userProfile", ignore = true)
     UserEntity mapUserCreateRequestToUserEntity(UserCreateRequest userCreateRequest);
 }
