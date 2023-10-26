@@ -10,7 +10,9 @@ import java.time.Instant;
 @Getter
 @Setter
 public class TokenDto {
+
     private String token;
+
     private Instant expirationTime;
 
 }

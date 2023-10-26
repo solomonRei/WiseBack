@@ -11,4 +11,4 @@ public interface YouTubeApiKeyService extends YouTubeKeyService {
 
     ChannelListResponse getChannelProfile(String channelId);
 
-    }
+}

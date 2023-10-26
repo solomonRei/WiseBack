@@ -8,6 +8,7 @@ import java.time.Instant;
 @Setter
 @Getter
 public class RefreshTokenDto {
+
     private Instant expirationDate;
 
     private String refreshToken;

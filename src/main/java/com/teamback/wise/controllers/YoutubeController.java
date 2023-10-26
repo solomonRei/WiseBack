@@ -6,7 +6,6 @@ import com.teamback.wise.exceptions.youtube.ChannelIdNotValidException;
 import com.teamback.wise.models.responses.youtube.ProfileByIdResponse;
 import com.teamback.wise.models.responses.youtube.StatisticsByIdResponse;
 import com.teamback.wise.services.youtube.YouTubeService;
-import com.teamback.wise.utils.AuthenticatedUserUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

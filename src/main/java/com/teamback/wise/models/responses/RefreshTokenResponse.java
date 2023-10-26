@@ -13,6 +13,7 @@ import java.time.Instant;
 @Setter
 @RequiredArgsConstructor
 public class RefreshTokenResponse {
+
     private final String accessToken;
 
     private final String refreshToken;
