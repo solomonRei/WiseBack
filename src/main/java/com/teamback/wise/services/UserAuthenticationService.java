@@ -5,5 +5,5 @@ import com.teamback.wise.models.responses.GoogleUserResponse;
 
 public interface UserAuthenticationService {
 
-    AuthResponse registration(GoogleUserResponse googleUserResponse);
+    AuthResponse registration(GoogleUserResponse googleUserResponse, String googleIdToken);
 }

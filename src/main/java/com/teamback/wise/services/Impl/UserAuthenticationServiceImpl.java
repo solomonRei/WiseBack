@@ -7,6 +7,7 @@ import com.teamback.wise.services.JWTTokenService;
 import com.teamback.wise.services.RefreshTokenService;
 import com.teamback.wise.services.UserAuthenticationService;
 import com.teamback.wise.services.UserService;
+import com.teamback.wise.services.youtube.api.YouTubeOauth2KeyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,15 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 
     private final JWTTokenService jwtTokenService;
 
+    private final YouTubeOauth2KeyService youTubeOauth2KeyService;
+
     @Override
-    public AuthResponse registration(GoogleUserResponse googleUserResponse) {
+    public AuthResponse registration(GoogleUserResponse googleUserResponse, String googleIdToken) {
         log.info("Registration of the user: " + googleUserResponse.getEmail());
 
         var mappedUser = UserMapper.INSTANCE.mapGoogleUserResponseToUserCreateRequest(googleUserResponse);
         var user = userService.createOrGetUser(mappedUser);
+        user.setYoutubeChannelId(youTubeOauth2KeyService.getAuthenticatedUserChannelId(googleIdToken));
         var tokenDto = jwtTokenService.generateAccessToken(String.valueOf(user.getId()));
         var refreshToken = refreshTokenService.createRefreshToken(user);
 

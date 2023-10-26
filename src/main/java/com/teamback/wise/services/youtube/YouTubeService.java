@@ -15,6 +15,8 @@ public interface YouTubeService {
 
     UserProfileEntity getUserProfile(String channelId);
 
+    UserProfileEntity getCurrentUserProfile();
+
     UserProfileEntity updateOrInsertUserProfile(String channelId);
 
     void updateOrInsertChannelCountryStatistics(String accessToken);
