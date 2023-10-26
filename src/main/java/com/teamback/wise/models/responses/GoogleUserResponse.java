@@ -10,6 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class GoogleUserResponse {
+
     private String username;
 
     private String email;

@@ -1,6 +1,7 @@
 package com.teamback.wise.services.youtube;
 
 import com.teamback.wise.domain.entities.StatisticEntity;
+import com.teamback.wise.domain.entities.UserEntity;
 import com.teamback.wise.domain.entities.UserProfileEntity;
 
 public interface YouTubeService {
@@ -12,6 +13,8 @@ public interface YouTubeService {
     StatisticEntity getChannelStatistics();
 
     StatisticEntity updateOrInsertChannelStatistics(String channelId);
+
+    void updateOrInsertChannelStatistics(UserEntity user);
 
     UserProfileEntity getUserProfile(String channelId);
 

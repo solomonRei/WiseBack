@@ -80,13 +80,27 @@ public class YouTubeServiceImpl implements YouTubeService {
         throw new ChannelStatisticNotFoundException("Channel statistics not found");
     }
 
+    @Override
+    public void updateOrInsertChannelStatistics(UserEntity user) {
+        var channelStatistics = youTubeApiKeyService.getChannelStatistics(user.getYoutubeChannelId());
+
+        if (channelStatistics != null) {
+            log.info("Updating or inserting Statistic for channel: " + user.getYoutubeChannelId());
+            var statisticEntity = StatisticMapper.INSTANCE.statisticResponseToStatisticEntity(channelStatistics.getItems().get(0), user);
+
+            user.setStatistic(statisticEntity);
+            userRepository.save(user);
+            log.info("Successfully updated or inserted Statistic for channel: " + user.getYoutubeChannelId());
+        }
+    }
+
     public UserProfileEntity getCurrentUserProfile() {
         var authenticatedUser = authenticatedUserUtils.getCurrentUserEntity();
         var channelId = authenticatedUser.getYoutubeChannelId();
 
         if (authenticatedUser.getUserProfile() != null &&
                 authenticatedUser.getUserProfile().getUpdatedAt().isBefore(ZonedDateTime.now().minusMinutes(30))) {
-            return updateOrInsertUserProfile(channelId); // update user profile if last update was > 30 mins ago
+            return updateOrInsertUserProfile(channelId);
         }
 
         return getUserProfile(channelId);
@@ -127,7 +141,6 @@ public class YouTubeServiceImpl implements YouTubeService {
         log.error("User profile not found");
         throw new UserProfileNotFoundException("User profile not found");
     }
-
 
 
     @Override

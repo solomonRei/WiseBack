@@ -37,6 +37,7 @@ public class YouTubeApiKeyServiceImpl implements YouTubeApiKeyService {
     private final Gson gson;
 
     private final List<String> partsStatistics = Collections.singletonList("statistics");
+
     private final List<String> partsProfile = Collections.singletonList("snippet,brandingSettings");
 
 

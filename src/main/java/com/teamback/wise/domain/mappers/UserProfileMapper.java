@@ -1,17 +1,16 @@
 package com.teamback.wise.domain.mappers;
 
-import com.google.api.services.youtube.model.Channel;
-import com.teamback.wise.domain.entities.UserProfileEntity;
-import com.teamback.wise.domain.entities.UserEntity;
 import com.google.api.client.util.DateTime;
-
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
+import com.google.api.services.youtube.model.Channel;
+import com.teamback.wise.domain.entities.UserEntity;
+import com.teamback.wise.domain.entities.UserProfileEntity;
 import com.teamback.wise.models.responses.youtube.ProfileByIdResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
+
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Mapper(unmappedTargetPolicy = org.mapstruct.ReportingPolicy.ERROR)
 public interface UserProfileMapper {
