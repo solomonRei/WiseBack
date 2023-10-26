@@ -36,10 +36,10 @@ public class VideoEntity {
     @Column(name = "video_id", unique = true, nullable = false)
     private String videoId;
 
-    @Column(name = "possible_idea")
+    @Column(name = "possible_idea", length = 4000)
     private String possibleIdea;
 
-    @Column
+    @Column(length = 4000)
     private String summary;
 
     @Column(columnDefinition = "jsonb")
@@ -67,6 +67,4 @@ public class VideoEntity {
     protected void onUpdate() {
         this.updatedAt = ZonedDateTime.now();
     }
-
-
 }
