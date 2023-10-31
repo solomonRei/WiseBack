@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.teamback</groupId>
     <artifactId>wise</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11</version>
     <name>wise-api</name>
     <packaging>jar</packaging>
     <description>Backend api for project Wise</description>
