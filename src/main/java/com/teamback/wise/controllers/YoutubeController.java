@@ -23,7 +23,7 @@ public class YoutubeController {
 
     private final YouTubeService youtubeService;
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "https://neptun.md")
     @GetMapping("/statistics/{channelId}")
     public ResponseEntity<StatisticsByIdResponse> getChannelStatisticsById(@PathVariable String channelId) {
         if (!youtubeService.isChannelIdValid(channelId)) {
@@ -35,7 +35,7 @@ public class YoutubeController {
         return ResponseEntity.ok(response);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "https://neptun.md")
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsByIdResponse> getChannelStatisticsAuthenticatedUser() {
         var publicStatistic = youtubeService.getChannelStatistics();
@@ -43,7 +43,7 @@ public class YoutubeController {
         return ResponseEntity.ok(response);
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
+    @CrossOrigin(origins = "https://neptun.md")
     @GetMapping("/profile")
     public ResponseEntity<ProfileByIdResponse> getProfileById() {
         var userProfile = youtubeService.getCurrentUserProfile();
