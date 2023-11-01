@@ -5,7 +5,34 @@ pipeline {
         maven 'maven-3.9'
     }
 
+    environment {
+        JDK_VERSION = '17'
+    }
+
     stages {
+        stage('Detect OS and Install JDK') {
+            steps {
+                script {
+                    def osInfo = sh(script: 'lsb_release -a || cat /etc/os-release', returnStdout: true).trim()
+                    echo "OS Information: ${osInfo}"
+
+                    if (osInfo.contains("Ubuntu") || osInfo.contains("Debian")) {
+                        echo "Detected Ubuntu/Debian"
+                        sh "sudo apt update"
+                        sh "sudo apt install -y openjdk-${env.JDK_VERSION}-jdk"
+                    } 
+                    else if (osInfo.contains("CentOS") || osInfo.contains("Red Hat")) {
+                        echo "Detected CentOS/RHEL"
+                        sh "sudo yum update"
+                        sh "sudo yum install -y java-${env.JDK_VERSION}-openjdk-devel"
+                    } 
+                    else {
+                        error "Unknown Linux distribution"
+                    }
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -20,11 +47,7 @@ pipeline {
             }
             steps {
                 echo 'building...'
-                container('docker') {
-                    script {
-                        dockerImage = docker.build("wiseback:${VERSION}")
-                    }
-                }
+                
             }
         }
 
