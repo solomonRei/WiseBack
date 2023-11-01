@@ -15,7 +15,7 @@ pipeline {
         stage('Build the application and Docker images') {
             when {
                 expression {
-                    BRANCH_NAME == 'master'
+                    BRANCH_NAME == 'main'
                 }
             }
             steps {
