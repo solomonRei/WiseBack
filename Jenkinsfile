@@ -18,13 +18,13 @@ pipeline {
 
                     if (osInfo.contains("Ubuntu") || osInfo.contains("Debian")) {
                         echo "Detected Ubuntu/Debian"
-                        sh "sudo apt update"
-                        sh "sudo apt install -y openjdk-${env.JDK_VERSION}-jdk"
+                        sh "apt update"
+                        sh "apt install -y openjdk-${env.JDK_VERSION}-jdk"
                     } 
                     else if (osInfo.contains("CentOS") || osInfo.contains("Red Hat")) {
                         echo "Detected CentOS/RHEL"
-                        sh "sudo yum update"
-                        sh "sudo yum install -y java-${env.JDK_VERSION}-openjdk-devel"
+                        sh "yum update"
+                        sh "yum install -y java-${env.JDK_VERSION}-openjdk-devel"
                     } 
                     else {
                         error "Unknown Linux distribution"
