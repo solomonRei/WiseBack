@@ -1,67 +1,68 @@
 pipeline {
-    agent any
+  agent any
 
-    tools {
-        maven 'maven-3.9'
+  tools {
+    maven 'maven-3.9'
+  }
+
+  environment {
+    DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
+    SONARQUBE_CREDENTIALS = credentials('sonarqube-credentials')
+    IMAGE_NAME = "smeloved/wiseback"
+  }
+
+  stages {
+    stage('Set variables') {
+      steps {
+        script {
+          sh '''
+          awk -F"[<>]" '/<version>[0-9]+\\.[0-9]+\\.[0-9]+-SNAPSHOT<\\/version>/{gsub("-SNAPSHOT", "", $3); print $3; exit}' pom.xml > ./temp.txt
+          '''
+          env.VERSION = readFile('./temp.txt').trim()
+        }
+      }
     }
 
-    environment {
-        JDK_VERSION = '17'
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('SONARQUBE_CREDENTIALS') {
+          sh 'mvn clean verify sonar:sonar'
+        }
+      }
     }
 
-    stages {
-        stage('Detect OS and Install JDK') {
-            steps {
-                script {
-                    def osInfo = sh(script: 'lsb_release -a || cat /etc/os-release', returnStdout: true).trim()
-                    echo "OS Information: ${osInfo}"
-
-                    if (osInfo.contains("Ubuntu") || osInfo.contains("Debian")) {
-                        echo "Detected Ubuntu/Debian"
-                        sh "apt update"
-                        sh "apt install -y openjdk-${env.JDK_VERSION}-jdk"
-                    } 
-                    else if (osInfo.contains("CentOS") || osInfo.contains("Red Hat")) {
-                        echo "Detected CentOS/RHEL"
-                        sh "yum update"
-                        sh "yum install -y java-${env.JDK_VERSION}-openjdk-devel"
-                    } 
-                    else {
-                        error "Unknown Linux distribution"
-                    }
-                }
-            }
-        }
-
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Build the application and Docker images') {
-            when {
-                expression {
-                    BRANCH_NAME == 'main'
-                }
-            }
-            steps {
-                echo 'building...'
-                
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Testing...'
-                sh 'mvn test'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-            }
-        }
+    stage('Build the application') {
+      steps {
+        echo 'Building the application...'
+        sh 'mvn package'
+      }
     }
+
+    stage('Build Docker Image') {
+      steps {
+        script {
+          dockerImage = docker.build("${IMAGE_NAME}:${VERSION}")
+        }
+      }
+    }
+
+    stage('Push Docker Image to Docker Hub') {
+      steps {
+        script {
+          docker.withRegistry('https://registry.hub.docker.com', 'DOCKERHUB_CREDENTIALS') {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "The process completed successfully."
+    }
+    failure {
+      echo "The process failed."
+    }
+  }
 }
