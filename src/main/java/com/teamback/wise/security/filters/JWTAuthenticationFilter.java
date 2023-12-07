@@ -25,6 +25,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     private final List<RequestMatcher> publicEndpoints = Arrays.asList(
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),
+            new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/authentication/**"),
             new AntPathRequestMatcher("/error")
     );
