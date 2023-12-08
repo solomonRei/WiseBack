@@ -14,11 +14,17 @@ pipeline {
         stage('Set variables') {
             steps {
                 script {
+                    // Extract version number from pom.xml and store it in a file
                     sh '''
-                    awk -F"[<>]" '/<version>[0-9]+\\.[0-9]+\\.[0-9]+-SNAPSHOT<\\/version>/{gsub("-SNAPSHOT", "", $3); print $3; exit}' pom.xml > ./temp.txt
+                    awk -F"[<>]" '/<version>[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?<\\/version>/{print $3; exit}' pom.xml > ./temp.txt
                     '''
+                    // Read the version number from the file and trim any whitespace
                     env.VERSION = readFile('./temp.txt').trim()
-                    // Debug: Print the VERSION to check its format
+                    // Check if VERSION is empty
+                    if (env.VERSION == '') {
+                        error "VERSION is not set. Make sure pom.xml contains a valid version."
+                    }
+                    // Print VERSION for debugging
                     echo "Version: ${env.VERSION}"
                 }
             }
@@ -45,8 +51,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Ensure dockerImage is accessible in later stages
                     env.DOCKER_IMAGE = "${env.IMAGE_NAME}:${env.VERSION}"
+                    echo "Building Docker Image: ${env.DOCKER_IMAGE}"
                     sh "docker build -t ${env.DOCKER_IMAGE} ."
                 }
             }
@@ -55,6 +61,7 @@ pipeline {
         stage('Push Docker Image to Docker Hub') {
             steps {
                 script {
+                    echo "Pushing Docker Image: ${env.DOCKER_IMAGE}"
                     withDockerRegistry(credentialsId: 'DOCKERHUB_CREDENTIALS', url: 'https://registry.hub.docker.com') {
                         sh "docker push ${env.DOCKER_IMAGE}"
                     }
