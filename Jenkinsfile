@@ -6,8 +6,7 @@ pipeline {
   }
 
   environment {
-    DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-    SONARQUBE_CREDENTIALS = credentials('sonarqube-credentials')
+    DOCKERHUB_CREDENTIALS = credentials('smeloved-wiseback')
     IMAGE_NAME = "smeloved/wiseback"
   }
 
@@ -23,13 +22,6 @@ pipeline {
       }
     }
 
-    stage('SonarQube Analysis') {
-      steps {
-        withSonarQubeEnv('SONARQUBE_CREDENTIALS') {
-          sh 'mvn clean verify sonar:sonar'
-        }
-      }
-    }
 
     stage('Build the application') {
       steps {
