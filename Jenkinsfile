@@ -62,10 +62,11 @@ pipeline {
             steps {
                 script {
                     echo "Pushing Docker Image: ${env.DOCKER_IMAGE}"
-                        withDockerRegistry(credentialsId: env.DOCKERHUB_CREDENTIALS, url: 'https://registry.hub.docker.com') {
-                            sh "docker push ${env.DOCKER_IMAGE}"
-                        }
+                    docker.withRegistry('https://registry.hub.docker.com', env.DOCKERHUB_CREDENTIALS) {
+                        sh "docker push ${env.DOCKER_IMAGE}"
+                    }
                 }
+
             }
         }
     }
