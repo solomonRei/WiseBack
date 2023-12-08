@@ -36,6 +36,9 @@ public class VideoEntity {
     @Column(name = "video_id", unique = true, nullable = false)
     private String videoId;
 
+    @Column(name = "video_name")
+    private String videoName;
+
     @Column(name = "possible_idea", length = 4000)
     private String possibleIdea;
 
