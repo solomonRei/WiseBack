@@ -13,17 +13,13 @@ pipeline {
         stage('Set variables') {
             steps {
                 script {
-                    // Extract version number from pom.xml and store it in a file
                     sh '''
                     awk -F"[<>]" '/<version>[0-9]+\\.[0-9]+\\.[0-9]+(-SNAPSHOT)?<\\/version>/{print $3; exit}' pom.xml > ./temp.txt
                     '''
-                    // Read the version number from the file and trim any whitespace
                     env.VERSION = readFile('./temp.txt').trim()
-                    // Check if VERSION is empty
                     if (env.VERSION == '') {
                         error "VERSION is not set. Make sure pom.xml contains a valid version."
                     }
-                    // Print VERSION for debugging
                     echo "Version: ${env.VERSION}"
                 }
             }
@@ -39,7 +35,6 @@ pipeline {
         stage('Validate Docker Image Tag') {
             steps {
                 script {
-                    // Validate that VERSION conforms to Docker's tag naming convention
                     if (!env.VERSION.matches("[a-zA-Z0-9_.-]{1,127}")) {
                         error "Invalid Docker tag: ${env.VERSION}. Tag must match [a-zA-Z0-9_.-]{1,127}"
                     }
