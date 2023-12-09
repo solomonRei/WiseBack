@@ -6,7 +6,6 @@ pipeline {
     }
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('smeloved-wiseback')
         IMAGE_NAME = "smeloved/wiseback"
     }
 
@@ -62,11 +61,12 @@ pipeline {
             steps {
                 script {
                     echo "Pushing Docker Image: ${env.DOCKER_IMAGE}"
-                    docker.withRegistry('https://registry.hub.docker.com', env.DOCKERHUB_CREDENTIALS) {
+                    withCredentials([usernamePassword(credentialsId: 'smeloved-wiseback', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh "echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin"
                         sh "docker push ${env.DOCKER_IMAGE}"
+                        sh "docker logout"
                     }
                 }
-
             }
         }
     }
